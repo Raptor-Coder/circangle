@@ -138,3 +138,50 @@ if (shaded === false) {
           t.down();
           t.goTo([1 / px_per_mm, 1 / px_per_mm]);
         }
+          // check if the pixel to the right of v is the same, and if it is draws a line to it
+        if (x < gridsize - 1 && pixels_to_render[y][x] === pixels_to_render[y][x + 1]) {
+          t.up();
+          t.goTo([0, 0]);
+          t.down();
+          t.goTo([1 / px_per_mm, 0]);
+        }
+        // check if the pixel below v is the same, and if it is draws a line to is
+        if (y < gridsize - 1 && pixels_to_render[y][x] === pixels_to_render[y + 1][x]) {
+          t.up();
+          t.goTo([0, 0]);
+          t.down();
+          t.goTo([0, 1 / px_per_mm]);
+        }
+        t.translate([x / px_per_mm, y / px_per_mm]);
+        bt.join(shapes, t.lines());
+      }
+    }
+  }
+}
+
+bt.translate(shapes, [size / 2, size / 2], bt.bounds(shapes).cc); // center it
+drawLines(shapes); // draw it
+
+// Draw a circle around all the shapes
+const circleCenter = bt.bounds(shapes).cc; // center of the bounding box of all shapes
+const circleRadius = bt.bounds(shapes).r + 1; // radius slightly larger than the bounding radius of shapes
+
+const numSegments = 100; // number of segments to approximate the circle
+const circlePoints = [];
+for (let i = 0; i <= numSegments; i++) {
+  const angle = (Math.PI * 2 / numSegments) * i;
+  const x = circleCenter[0] + circleRadius * Math.cos(angle);
+  const y = circleCenter[1] + circleRadius * Math.sin(angle);
+  circlePoints.push([x, y]);
+}
+
+const circleTurtle = new bt.Turtle();
+circleTurtle.up();
+circleTurtle.goTo(circlePoints[0]);
+circleTurtle.down();
+for (let i = 1; i <= numSegments; i++) {
+  circleTurtle.goTo(circlePoints[i]);
+}
+
+bt.join(shapes, circleTurtle.lines()); // Join the circle to the shapes array
+drawLines(shapes); // draw it including the circle
