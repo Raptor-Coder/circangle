@@ -64,3 +64,29 @@ while (itr < 10000) { // checks a bunch of random points in the range
     break;
   }
 }
+
+const pixarr = []; // array of computed pixels
+
+for (let x = 0; x < gridsize; x++) {
+  const row = [];
+  for (let y = 0; y < gridsize; y++) {
+    const thing = Math.round(Math.log(mandelbrot_px(map_linear(0, gridsize, xrange[0], xrange[1], y), map_linear(0, gridsize, yrange[0], yrange[1], x)), 1.05)); // calls mandelbrot_px on scaled coordinates
+    // above line also takes the log base 1.05 of that and rounds it, to better render things up close (so that not everything is a border)
+    row.push(thing);
+  }
+  pixarr.push(row);
+}
+
+const pixels_to_render = [];
+for (let y = 0; y < pixarr.length; y++) {
+  const render_row = [];
+  for (let x = 0; x < pixarr[0].length; x++) {
+    const v = pixarr[y][x];
+    if ((pixarr[y + 1] === undefined || pixarr[y - 1] === undefined) || (v !== pixarr[y + 1][x] || v !== pixarr[y][x + 1])) { // this determines if something is different from any of its neighbors
+      render_row.push(v);
+    } else {
+      render_row.push(0); // push a null value
+    }
+  }
+  pixels_to_render.push(render_row);
+}
