@@ -90,3 +90,51 @@ for (let y = 0; y < pixarr.length; y++) {
   }
   pixels_to_render.push(render_row);
 }
+
+if (shaded === true) {
+  const t = new bt.Turtle();
+  for (let y = 0; y < pixels_to_render.length; y++) {
+    let block_begin = 0;
+    let block_val = false;
+    for (let x = 0; x < pixels_to_render[0].length; x++) {
+      const cond = (pixels_to_render[y][x] !== 0);
+      if (cond !== block_val) {
+        if (block_val) {
+          t.up();
+          t.goTo([block_begin / px_per_mm, y / px_per_mm]);
+          t.down();
+          t.goTo([x / px_per_mm, y / px_per_mm]);
+        }
+        block_begin = x;
+        block_val = !block_val;
+      }
+    }
+    if (block_val) {
+      t.up();
+      t.goTo([block_begin / px_per_mm, y / px_per_mm]);
+      t.down();
+      t.goTo([gridsize / px_per_mm, y / px_per_mm]);
+    }
+  }
+  bt.join(shapes, t.lines());
+}
+
+if (shaded === false) {
+  for (let y = 0; y < pixels_to_render.length; y++) {
+    for (let x = 0; x < pixels_to_render[0].length; x++) {
+      if (pixels_to_render[y][x] !== 0) { // ignore the 0s
+        const t = new bt.Turtle();
+        // check if the pixel diagonally down and to the left to v is the same, and if it is draws a line to it
+        if (x > 0 && y < gridsize - 1 && pixels_to_render[y][x] === pixels_to_render[y + 1][x - 1]) {
+          t.up();
+          t.goTo([0, 0]);
+          t.down();
+          t.goTo([-1 / px_per_mm, 1 / px_per_mm]);
+        }
+        // check if the pixel diagonally down and to the right to v is the same, and if it is draws a line to it
+        if (x < gridsize - 1 && y < gridsize - 1 && pixels_to_render[y][x] === pixels_to_render[y + 1][x + 1]) {
+          t.up();
+          t.goTo([0, 0]);
+          t.down();
+          t.goTo([1 / px_per_mm, 1 / px_per_mm]);
+        }
