@@ -28,3 +28,39 @@ function mandelbrot_px(x, y) { // calculates mandelbrot set inclusion for a comp
     z1 = newz1;
     itr++;
   }
+  return itr;
+}
+
+function shade(pixsize, density) { // shades a pixel to a given density (in lines/mm)
+  const t = new bt.Turtle();
+  for (let i = 0; i < pixsize; i += (1 / density)) {
+    t.goTo([0, i]);
+    t.down();
+    t.forward(pixsize);
+    t.up();
+  }
+  return t;
+}
+
+function map_linear(f1, f2, t1, t2, val) { // simple linear mapping to make it easier to get complex values
+  const f_dist = f1 - f2;
+  const t_dist = t1 - t2;
+  const mult = t_dist / f_dist;
+  return val * mult + t1;
+}
+
+let x_cent = 0;
+let y_cent = 0; // x and y center to check
+let itr = 0;
+while (itr < 10000) { // checks a bunch of random points in the range
+  x_cent = map_linear(0, 1, -2, 0.5, Math.random());
+  y_cent = map_linear(0, 1, -1.125, 1.125, Math.random());
+  itr++;
+  const val = mandelbrot_px(x_cent, y_cent); // the mandelbrot value of the point
+  if (val < 1000 && val > 70) { // if point is classified as "interesting"
+    const zoom = Math.pow(0.1, Math.random() * 5); // set a zoom and zoom in on it.
+    xrange = [x_cent - zoom, x_cent + zoom];
+    yrange = [y_cent - zoom, y_cent + zoom];
+    break;
+  }
+}
