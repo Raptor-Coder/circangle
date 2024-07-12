@@ -1,2 +1,2 @@
-# map-maker
-A blot project that can draw up randomised maps.
+# circangle
+A blot project that can draw up randomised triangles in circles.
